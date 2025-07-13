@@ -3,7 +3,7 @@ from PIL import Image
 from io import BytesIO
 from collections import Counter
 from streamlit_image_coordinates import streamlit_image_coordinates
-
+import random
 
 from character_roster import roster as starting_roster
 from streamlit_visualisations import plot_map
@@ -29,6 +29,8 @@ def initialize_game():
     st.session_state.pending_attacker = None
     st.session_state.pending_defender = None
     st.session_state.pending_advantage = None
+    st.session_state.random_character_pool = [
+        p for row in st.session_state.map for p in row if p != "blank"]
 
 
 # ---------------- Utility ---------------- #
@@ -132,6 +134,14 @@ def resolve_round(victor_choice):
     losing_count = defender_count if victor_choice == "A" else attacker_count
 
     updated_map = update_map(map, winner, loser, losing_count)
+    character_pool = st.session_state.random_character_pool
+    try:
+        character_pool.remove(winner)
+        character_pool.remove(loser)
+    except ValueError:
+        pass
+    print(f"Character pool: {character_pool}, winner: {winner}, loser: {loser}")
+    st.session_state.random_character_pool = character_pool
     st.session_state.map = updated_map
     st.session_state.round += 1
 
@@ -211,13 +221,26 @@ def render_game_phase():
             clear_selection()
             st.rerun()
 
-
+def randomize_attacker():
+    character_pool = st.session_state.random_character_pool
+    if len(character_pool) == 0:
+        st.write("All characters have been selected.")
+        return
+    character = random.choice(character_pool)
+    st.session_state.pending_attacker = character
+    map = st.session_state.map
+    highlighted_img = plot_map(map, return_image=True, attacker=character)
+    st.session_state.images[-1] = highlighted_img
 
 def render_restart_button():
     if st.button("Restart Game"):
         initialize_game()
         st.rerun()
 
+def render_random_attacker_button():
+    if st.button("Random Attacker"):
+        randomize_attacker()
+        st.rerun()
 
 def clear_selection():
     st.session_state.pending_attacker = None
@@ -248,6 +271,7 @@ def main():
         if not st.session_state.game_over:
             render_game_phase()
 
+        render_random_attacker_button()
         render_restart_button()
 
     with col2:
