@@ -166,7 +166,12 @@ def render_map_and_click_handler():
 def render_last_round_summary():
     if st.session_state.last_attacker and st.session_state.last_defender:
         st.write(f"**{st.session_state.last_attacker}** attacked **{st.session_state.last_defender}**")
-        st.write(f"{st.session_state.last_defender} had a disadvantage of **{st.session_state.last_advantage}%**")
+        if st.session_state.last_advantage > 0:
+            st.write(f"{st.session_state.last_attacker} had an advantage of **{st.session_state.last_advantage}%**")
+        elif st.session_state.last_advantage < 0:
+            st.write(f"{st.session_state.last_defender} had an advantage of **{-st.session_state.last_advantage}%**")
+        else:
+            st.write(f"{st.session_state.last_defender} and {st.session_state.last_attacker} are evenly matched.")
         st.write(f"🏆 Winner: **{st.session_state.last_victor}**")
 
 
@@ -183,7 +188,12 @@ def render_game_phase():
         advantage = st.session_state.pending_advantage
 
         st.write(f"**{attacker}** is attacking **{defender}**")
-        st.write(f"{defender} has a disadvantage of **{advantage}%**")
+        if advantage > 0:
+            st.write(f"{defender} has a handicap of **{advantage}%**")
+        elif advantage < 0:
+            st.write(f"{attacker} has a handicap of **{-advantage}%**")
+        else:
+            st.write(f"{defender} and {attacker} are evenly matched.")
 
         st.radio(
             "Who won the round?",

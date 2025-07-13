@@ -10,16 +10,24 @@ advantage
 Rounds down but not up
 '''
 def calculate_advantage(attacking_player_count, defending_player_count):
-    if attacking_player_count - defending_player_count <= 4:
-        return 0
-    if attacking_player_count - defending_player_count >= 4:
-        return 10
-    elif floor(attacking_player_count / defending_player_count) == 4:
-        return 20
-    elif floor(attacking_player_count / defending_player_count) == 8:
-        return 30
+    advantage = 0
+    bigger_player = attacking_player_count if attacking_player_count > defending_player_count else defending_player_count
+    smaller_player = defending_player_count if bigger_player == attacking_player_count else attacking_player_count
+    diff = bigger_player - smaller_player
+    if diff <= 4:
+        advantage = 0
+    if diff >= 4 :
+        advantage = 10
+    scale = floor(bigger_player / smaller_player)
+    if 4 <= scale < 8:
+        advantage = 20
+    if scale >= 8:
+        advantage = 30
+
+    if attacking_player_count > defending_player_count:
+        return advantage
     else:
-        return 0
+        return -advantage
 
 import numpy as np
 
