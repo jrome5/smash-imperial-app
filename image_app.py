@@ -6,9 +6,8 @@ from streamlit_image_coordinates import streamlit_image_coordinates
 
 
 from character_roster import roster as starting_roster
-from visualisations import plot_map
-from main import (
-    find_surrounding_players,
+from streamlit_visualisations import plot_map
+from utils import (
     calculate_advantage,
     update_map,
 )
@@ -19,7 +18,7 @@ def initialize_game():
     st.session_state.map = [row.copy() for row in starting_roster]
     st.session_state.round = 0
     st.session_state.game_over = False
-    st.session_state.images = [Image.fromarray(plot_map(st.session_state.map, return_image=True))]
+    st.session_state.images = [plot_map(st.session_state.map, return_image=True)]
 
     st.session_state.last_attacker = None
     st.session_state.last_defender = None
@@ -98,7 +97,7 @@ def handle_map_click(click):
             st.session_state.pending_attacker = clicked_cell
             attacker = st.session_state.pending_attacker
             highlighted_img = plot_map(map, return_image=True, attacker=attacker)
-            st.session_state.images[-1] = Image.fromarray(highlighted_img)
+            st.session_state.images[-1] = highlighted_img
             st.rerun()
 
         elif st.session_state.pending_defender is None and clicked_cell != st.session_state.pending_attacker:
@@ -113,7 +112,7 @@ def handle_map_click(click):
 
             # 🔥 Highlight attacker and defender on map
             highlighted_img = plot_map(map, return_image=True, attacker=attacker, defender=defender)
-            st.session_state.images[-1] = Image.fromarray(highlighted_img)
+            st.session_state.images[-1] = highlighted_img
 
             st.session_state.phase = "resolution"
             st.rerun()
@@ -141,8 +140,7 @@ def resolve_round(victor_choice):
     st.session_state.last_advantage = advantage
     st.session_state.last_victor = winner
 
-    st.session_state.images.append(Image.fromarray(
-        plot_map(updated_map, return_image=True)))
+    st.session_state.images.append(plot_map(updated_map, return_image=True))
 
     over, winning_player = check_winner(updated_map)
     if over:
