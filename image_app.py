@@ -2,7 +2,6 @@ import streamlit as st
 from PIL import Image
 from io import BytesIO
 from collections import Counter
-# from streamlit_image_coordinates import image_coordinates
 from streamlit_image_coordinates import streamlit_image_coordinates
 
 
